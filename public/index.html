@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Matrícula SESI/SENAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 90%;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(90deg, #7a1212, #b32626);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 1px 10px 25px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .card2 {
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #a30b0b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #945454;
+        }
+
+        button {
+            width: 100%;
+            background: #a30b0b;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 30px;
+        }
+
+        .bnt2 {
+            width: 60%;
+            background: white;
+            color: #a30b0b;
+            border: none;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: initial;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #b04141;
+            transform: translateY(-2px);
+        }
+
+        .lista {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .item-lista {
+            background: white;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 5px solid #911409;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Área da foto */
+        .foto-preview {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .foto-preview img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #911409;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            display: none;
+            background: #f0f0f0;
+        }
+
+        /* Texto abaixo da imagem */
+        .foto-preview span {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Input file mais bonito */
+        input[type="file"] {
+            padding: 8px;
+            background: #fafafa;
+            border: 2px dashed #bbb;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #911409;
+            background: #fff;
+        }
+
+        .logo-senai {
+            width: 200px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <img src="/source/logo.png" alt="Logo SENAI" class="logo-senai">
+        <h1>Matricular Aluno</h1>
+        <form action="/add" method="POST" enctype="multipart/form-data" onsubmit="return validarIdade(event)">
+            <input type="text" name="Nome" placeholder="Nome Completo" required>
+            <input type="email" name="Email" placeholder="Email" required>
+            <input type="tel" name="Telefone" placeholder="Telefone" required>
+            <input type="date" name="date" placeholder="Data de Nascimento" required>
+            <input type="file" name="foto" accept="image/*" required onchange="previewImagem(event)">
+
+            <div class="foto-preview">
+                <img id="preview">
+                <span>Foto de perfil</span>
+            </div>
+
+            <button type="submit">Matricular</button>
+        </form>
+    </div>
+    <div class="card2">
+        <a class="bnt2" href="/list">Ver Alunos Matriculados</a>
+    </div>
+    <script>
+        function previewImagem(event) {
+            const img = document.getElementById('preview');
+            img.src = URL.createObjectURL(event.target.files[0]);
+            img.style.display = 'block';
+        }
+
+        function calcularIdade(dataNascimento) {
+            const hoje = new Date();
+            const nasc = new Date(dataNascimento);
+
+            let idade = hoje.getFullYear() - nasc.getFullYear();
+            const mes = hoje.getMonth() - nasc.getMonth();
+
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+                idade--;
+            }
+
+            return idade;
+        }
+
+        function validarIdade(event) {
+            const inputData = document.querySelector('input[name="date"]').value;
+
+            if (!inputData) return false;
+
+            const idade = calcularIdade(inputData);
+
+            if (idade < 14) {
+                alert("Aluno NÃO pode se matricular (idade mínima: 14 anos).");
+                return false; // BLOQUEIA O POST
+            }
+
+            alert("Aluno Matriculado!");
+            return true; // PERMITE O POST
+        }
+    </script>
+</body>
+
+</html>
